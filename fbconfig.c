@@ -10,6 +10,7 @@
  * Original developer -- Michael Robbeloth, PDi 2017 */
 int main(int argc, char **argv) {  
     struct fb_var_screeninfo vi;
+    struct fb_fix_screeninfo fi;
 
     /* Open either the device path given on the command line or use
      * dev/graphics/fb0 by default */
@@ -32,8 +33,13 @@ int main(int argc, char **argv) {
        return 2;
     }
 
+     if (ioctl(fd, FBIOGET_FSCREENINFO, &fi) < 0) {
+         perror("failed to get fb0 info");
+         close(fd);
+     }
+
     /* Print the variable screen information and terminate */
-    printf("fb0 reports:\n"
+    printf("fb0 reports the following variable info:\n"
            "  vi.bits_per_pixel = %d\n"
            "  vi.red.offset   = %3d   .length = %3d\n"
            "  vi.green.offset = %3d   .length = %3d\n"
@@ -68,6 +74,32 @@ int main(int argc, char **argv) {
            vi.hsync_len, vi.vsync_len, 
            vi.vmode,
            vi.rotate);
+    
+    printf("fb0 reports the following fixed info:\n"
+           "   id=%s\n"
+           "   smem_start=0x%lx\n"
+           "   smem_len=%9d\n"
+           "   type=%3d\n"
+           "   type_aux=%3d\n"
+           "   visual=%3d\n"
+           "   xpanstep=%3d ypanstep=%3d\n"
+           "   ywrapstep=%3d\n"
+           "   line_Length=%3d\n"
+           "   mmio_start=0x%lx\n"
+           "   mmio_len=%9d\n"
+           "   accel=%6d\n",
+           fi.id,
+           fi.smem_start,
+           fi.smem_len,
+           fi.type,
+           fi.type_aux,
+           fi.visual,
+           fi.xpanstep, fi.ypanstep,
+           fi.ywrapstep,
+           fi.line_length,
+           fi.mmio_start,
+           fi.mmio_len, 
+           fi.accel);
 
     /* Return successful completion */
     return 0;
