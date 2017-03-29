@@ -1,0 +1,4 @@
+Simple utility to display properties of framebuffer device.
+
+The only supported parameter is the path to the framebuffer device.
+The default path is /dev/graphics/fb0
